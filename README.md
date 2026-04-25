@@ -88,3 +88,78 @@ Try adjusting the OCR confidence slider in the GUI. Lower values include more te
 
 ### Slow performance
 First run downloads models (~1.5GB). Subsequent runs use cached models from `~/.cache/huggingface/`.
+
+---
+
+## Fork / Local Development
+
+This section covers installing and running from a local fork of this repo instead of the published PyPI package.
+
+### Prerequisites
+
+Install `uv` if not already installed:
+```powershell
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+Restart your terminal after installing.
+
+### Redirect installs to a custom drive (optional)
+
+By default uv and HuggingFace store data on C:/. Run this once to redirect everything to a different drive:
+```powershell
+[System.Environment]::SetEnvironmentVariable("UV_CACHE_DIR",          "X:\uv\cache",  "User")
+[System.Environment]::SetEnvironmentVariable("UV_TOOL_DIR",           "X:\uv\tools",  "User")
+[System.Environment]::SetEnvironmentVariable("UV_PYTHON_INSTALL_DIR", "X:\uv\python", "User")
+[System.Environment]::SetEnvironmentVariable("HF_HUB_CACHE",          "X:\models",    "User")
+```
+Replace `X:` with your preferred drive. Open a new terminal after running so the values take effect.
+
+### Install from local fork
+
+```powershell
+uv tool install --force --python 3.12 "path\to\your\fork"
+```
+
+> If env vars aren't loading in the current session, set them inline before the install command:
+> ```powershell
+> $env:UV_CACHE_DIR = "X:\uv\cache"; $env:UV_TOOL_DIR = "X:\uv\tools"; $env:UV_PYTHON_INSTALL_DIR = "X:\uv\python"; uv tool install --force --python 3.12 "path\to\your\fork"
+> ```
+
+### Running the app
+
+Option 1 — double-click `run.bat` in the repo root (sets env vars automatically).
+
+Option 2 — from a terminal:
+```powershell
+interpreter-v2
+```
+
+### Upgrade after code changes
+
+```powershell
+uv tool install --force --python 3.12 "path\to\your\fork"
+```
+
+### Uninstall
+
+```powershell
+uv tool uninstall interpreter-v2
+```
+
+To also remove all downloaded packages and models:
+```powershell
+Remove-Item -Recurse -Force "$env:UV_TOOL_DIR"
+Remove-Item -Recurse -Force "$env:UV_CACHE_DIR"
+Remove-Item -Recurse -Force "$env:UV_PYTHON_INSTALL_DIR"
+Remove-Item -Recurse -Force "$env:HF_HUB_CACHE"
+```
+
+### Custom model storage path
+
+Edit `set_models_dir()` in `src/interpreter/__main__.py` to point to any directory:
+
+```python
+set_models_dir(r"X:\your\preferred\path")
+```
+
+Models are downloaded on **first launch** and reused from cache on all subsequent runs.
