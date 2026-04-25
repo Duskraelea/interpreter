@@ -13,7 +13,10 @@ import signal
 if hasattr(signal, "SIGUSR1"):
     faulthandler.register(signal.SIGUSR1, all_threads=True)
 
+from .models import set_models_dir
 from .gui import run
+
+set_models_dir(r"D:\Users\User\Desktop\Projects\OCR")
 
 if __name__ == "__main__":
     run()

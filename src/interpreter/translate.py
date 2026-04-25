@@ -14,7 +14,7 @@ from huggingface_hub import snapshot_download
 from huggingface_hub.utils import LocalEntryNotFoundError
 
 from . import log
-from .models import ModelLoadError
+from .models import ModelLoadError, get_models_dir
 
 logger = log.get_logger()
 
@@ -87,6 +87,7 @@ def _get_sugoi_model_path() -> Path:
         model_path = snapshot_download(
             repo_id=SUGOI_REPO_ID,
             local_files_only=True,
+            cache_dir=str(get_models_dir()),
         )
         model_path = Path(model_path)
         # Validate that required files exist
@@ -101,7 +102,7 @@ def _get_sugoi_model_path() -> Path:
 
     # Not cached, download from HuggingFace
     logger.info("downloading sugoi v4 model", size="~1.1GB")
-    model_path = Path(snapshot_download(repo_id=SUGOI_REPO_ID))
+    model_path = Path(snapshot_download(repo_id=SUGOI_REPO_ID, cache_dir=str(get_models_dir())))
 
     # Validate download completed successfully
     if not _validate_model_files(model_path):
